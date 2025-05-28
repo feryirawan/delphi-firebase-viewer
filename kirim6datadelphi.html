@@ -3,59 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <title>Realtime Viewer dari Delphi</title>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+  <script type="module">
+    // Import modular Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+    // Konfigurasi Firebase kamu
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQxswaTSZIaFfl7W4AT1ifdHUlVctNBN0",
+      authDomain: "data-delphi.firebaseapp.com",
+      databaseURL: "https://data-delphi-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "data-delphi",
+      storageBucket: "data-delphi.firebasestorage.app",
+      messagingSenderId: "722795208071",
+      appId: "1:722795208071:web:58e01a09468ca8b91c0722",
+      measurementId: "G-C0BEL36ES6"
+    };
+
+    // Inisialisasi Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Loop untuk membaca data dari data/1 sampai data/6
+    for (let i = 1; i <= 6; i++) {
+      const dataRef = ref(db, 'data/' + i + '/value');
+      onValue(dataRef, (snapshot) => {
+        const value = snapshot.val();
+        document.getElementById('data' + i).innerText = value || '[Kosong]';
+      });
+    }
+  </script>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
+      background: #f8f9fa;
       padding: 20px;
-      background-color: #f0f4f8;
     }
     h2 {
-      color: #333;
+      color: #2c3e50;
     }
-    .data-box {
+    .box {
       padding: 10px;
       margin-bottom: 10px;
-      background: white;
-      border-left: 6px solid #3f51b5;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .label {
-      font-weight: bold;
-    }
-    .value {
-      color: #2c3e50;
-      font-size: 1.2em;
+      background: #fff;
+      border-left: 5px solid #007BFF;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
+  <h2>Realtime Data dari Delphi</h2>
 
-  <h2>Realtime Data dari Aplikasi Delphi</h2>
-
-  <div class="data-box" id="data1"><span class="label">Data 1:</span> <span class="value"></span></div>
-  <div class="data-box" id="data2"><span class="label">Data 2:</span> <span class="value"></span></div>
-  <div class="data-box" id="data3"><span class="label">Data 3:</span> <span class="value"></span></div>
-  <div class="data-box" id="data4"><span class="label">Data 4:</span> <span class="value"></span></div>
-  <div class="data-box" id="data5"><span class="label">Data 5:</span> <span class="value"></span></div>
-  <div class="data-box" id="data6"><span class="label">Data 6:</span> <span class="value"></span></div>
-
-  <script>
-    const firebaseConfig = {
-      databaseURL: "https://data-delphi-default-rtdb.asia-southeast1.firebasedatabase.app/"
-    };
-
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    for (let i = 1; i <= 6; i++) {
-      const ref = db.ref("data/" + i + "/value");
-      ref.on("value", (snapshot) => {
-        const value = snapshot.val();
-        document.querySelector("#data" + i + " .value").innerText = value || "[Kosong]";
-      });
-    }
-  </script>
+  <div class="box">Data 1: <span id="data1">[Menunggu]</span></div>
+  <div class="box">Data 2: <span id="data2">[Menunggu]</span></div>
+  <div class="box">Data 3: <span id="data3">[Menunggu]</span></div>
+  <div class="box">Data 4: <span id="data4">[Menunggu]</span></div>
+  <div class="box">Data 5: <span id="data5">[Menunggu]</span></div>
+  <div class="box">Data 6: <span id="data6">[Menunggu]</span></div>
 </body>
 </html>
