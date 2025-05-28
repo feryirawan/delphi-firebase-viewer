@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>Realtime Viewer dari Delphi</title>
-  <script type="module">
-    // Import modular Firebase SDK
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
+  <!-- Firebase v8 CDN -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
     // Konfigurasi Firebase kamu
     const firebaseConfig = {
       apiKey: "AIzaSyBQxswaTSZIaFfl7W4AT1ifdHUlVctNBN0",
@@ -21,15 +22,13 @@
     };
 
     // Inisialisasi Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    // Loop untuk membaca data dari data/1 sampai data/6
+    // Ambil data dari path data/1 sampai data/6
     for (let i = 1; i <= 6; i++) {
-      const dataRef = ref(db, 'data/' + i + '/value');
-      onValue(dataRef, (snapshot) => {
-        const value = snapshot.val();
-        document.getElementById('data' + i).innerText = value || '[Kosong]';
+      firebase.database().ref('data/' + i + '/value').on('value', function(snapshot) {
+        document.getElementById('data' + i).innerText = snapshot.val() || '[Kosong]';
       });
     }
   </script>
