@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Realtime Viewer dari Delphi</title>
+
+  <!-- Firebase v8 CDN -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+    // Konfigurasi Firebase kamu
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQxswaTSZIaFfl7W4AT1ifdHUlVctNBN0",
+      authDomain: "data-delphi.firebaseapp.com",
+      databaseURL: "https://data-delphi-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "data-delphi",
+      storageBucket: "data-delphi.firebasestorage.app",
+      messagingSenderId: "722795208071",
+      appId: "1:722795208071:web:58e01a09468ca8b91c0722",
+      measurementId: "G-C0BEL36ES6"
+    };
+
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Ambil data dari path data/1 sampai data/6
+    for (let i = 1; i <= 6; i++) {
+      firebase.database().ref('data/' + i + '/value').on('value', function(snapshot) {
+        document.getElementById('data' + i).innerText = snapshot.val() || '[Kosong]';
+      });
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f8f9fa;
+      padding: 20px;
+    }
+    h2 {
+      color: #2c3e50;
+    }
+    .box {
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #fff;
+      border-left: 5px solid #007BFF;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h2>Realtime Data dari Delphi</h2>
+
+  <div class="box">Data 1: <span id="data1">[Menunggu]</span></div>
+  <div class="box">Data 2: <span id="data2">[Menunggu]</span></div>
+  <div class="box">Data 3: <span id="data3">[Menunggu]</span></div>
+  <div class="box">Data 4: <span id="data4">[Menunggu]</span></div>
+  <div class="box">Data 5: <span id="data5">[Menunggu]</span></div>
+  <div class="box">Data 6: <span id="data6">[Menunggu]</span></div>
+</body>
+</html>
