@@ -2,15 +2,48 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Realtime Viewer dari Delphi</title>
-
-  <!-- Firebase v8 CDN -->
+  <title>Grafik Realtime 6 Data dari Delphi</title>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f0f4f8;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+    }
+    .chart-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    canvas {
+      width: 100%;
+      height: 300px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Grafik Realtime dari 6 Data Delphi via Firebase</h2>
+
+  <div class="chart-container"><canvas id="chart1"></canvas></div>
+  <div class="chart-container"><canvas id="chart2"></canvas></div>
+  <div class="chart-container"><canvas id="chart3"></canvas></div>
+  <div class="chart-container"><canvas id="chart4"></canvas></div>
+  <div class="chart-container"><canvas id="chart5"></canvas></div>
+  <div class="chart-container"><canvas id="chart6"></canvas></div>
 
   <script>
-    // Konfigurasi Firebase kamu
-    const firebaseConfig = {
+    // Firebase config kamu
+    var firebaseConfig = {
       apiKey: "AIzaSyBQxswaTSZIaFfl7W4AT1ifdHUlVctNBN0",
       authDomain: "data-delphi.firebaseapp.com",
       databaseURL: "https://data-delphi-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -21,44 +54,56 @@
       measurementId: "G-C0BEL36ES6"
     };
 
-    // Inisialisasi Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Ambil data dari path data/1 sampai data/6
+    // Buat array untuk menyimpan chart dan konfigurasinya
+    const charts = [];
+
     for (let i = 1; i <= 6; i++) {
-      firebase.database().ref('data/' + i + '/value').on('value', function(snapshot) {
-        document.getElementById('data' + i).innerText = snapshot.val() || '[Kosong]';
+      const ctx = document.getElementById('chart' + i).getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Data ' + i,
+            data: [],
+            borderColor: 'hsl(' + (i * 60) + ', 70%, 50%)',
+            fill: false,
+            tension: 0.1
+          }]
+        },
+        options: {
+          animation: false,
+          responsive: true,
+          scales: {
+            x: { title: { display: true, text: 'Waktu' }},
+            y: { title: { display: true, text: 'Nilai' }, suggestedMin: 0 }
+          }
+        }
+      });
+      charts.push(chart);
+
+      // Firebase listener untuk masing-masing data
+      const refPath = 'data/' + i + '/value';
+      firebase.database().ref(refPath).on('value', function(snapshot) {
+        const val = parseFloat(snapshot.val());
+        const time = new Date().toLocaleTimeString();
+
+        if (!isNaN(val)) {
+          const c = charts[i - 1];
+          c.data.labels.push(time);
+          c.data.datasets[0].data.push(val);
+
+          if (c.data.labels.length > 20) {
+            c.data.labels.shift();
+            c.data.datasets[0].data.shift();
+          }
+          c.update();
+        }
       });
     }
   </script>
-
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f8f9fa;
-      padding: 20px;
-    }
-    h2 {
-      color: #2c3e50;
-    }
-    .box {
-      padding: 10px;
-      margin-bottom: 10px;
-      background: #fff;
-      border-left: 5px solid #007BFF;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-  </style>
-</head>
-<body>
-  <h2>Realtime Data dari Delphi</h2>
-
-  <div class="box">Data 1: <span id="data1">[Menunggu]</span></div>
-  <div class="box">Data 2: <span id="data2">[Menunggu]</span></div>
-  <div class="box">Data 3: <span id="data3">[Menunggu]</span></div>
-  <div class="box">Data 4: <span id="data4">[Menunggu]</span></div>
-  <div class="box">Data 5: <span id="data5">[Menunggu]</span></div>
-  <div class="box">Data 6: <span id="data6">[Menunggu]</span></div>
 </body>
 </html>
